@@ -1,0 +1,63 @@
+*
+*******************************************
+*
+*BAT854CW
+*
+*NXP Semiconductors
+*
+*Schottky barrier (double) diodes
+*
+*
+*
+*
+*IFSM = 1A    @ tp = 8,3ms
+*VF   = 550mV @ IF = 100mA
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*Package pinning does not match Spice model pinning.
+*Package: SOT323
+*
+*Package Pin 1: Anode           D1                       
+*Package Pin 2: Anode           D2
+*Package Pin 3: Cathode;Cathode D1;D2   
+*
+*
+*
+*Simulator: SPICE2
+*
+*******************************************
+*#
+.SUBCKT BAT854CW 1 2 
+*
+* The Resistor R1 does not reflect 
+* a physical device. Instead it
+* improves modeling in the reverse 
+* mode of operation.
+*
+R1 1 2 9.5E+07
+D1 1 2 BAT854CW
+*
+.MODEL BAT854CW D
++ IS = 8E-08
++ N = 1.012
++ BV = 45
++ IBV = 0.0001
++ RS = 0.8243
++ CJO = 2.515E-11
++ VJ = 0.4182
++ M = 0.4941
++ FC = 0.5
++ TT = 0
++ EG = 0.69
++ XTI = 2
+.ENDS
+*
+
