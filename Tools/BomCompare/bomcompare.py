@@ -1,7 +1,7 @@
 import csv
 from openpyxl import Workbook
 from openpyxl.utils import get_column_letter
-from openpyxl.styles import Alignment
+from openpyxl.styles import Alignment, Border, Side, PatternFill
 
 # Funciones de lectura y comparación
 def read_bom(file_path):
@@ -49,6 +49,14 @@ def write_changes_xlsx(modified, added, removed, filename='BOM_Comparison.xlsx')
     # Alineación centrada para combinar celdas
     center_align = Alignment(vertical='center', horizontal='center')
 
+    # Styles: fills and border
+    fill_modified = PatternFill(start_color='D3D3D3', end_color='D3D3D3', fill_type='solid')
+    fill_added = PatternFill(start_color='C6EFCE', end_color='C6EFCE', fill_type='solid')
+    fill_removed = PatternFill(start_color='FFC7CE', end_color='FFC7CE', fill_type='solid')
+
+    thick = Side(border_style='thick', color='000000')
+    none_side = Side(border_style=None)
+
     # Modificados
     for ref, changes in modified.items():
         fields = list(changes.keys())
@@ -62,14 +70,62 @@ def write_changes_xlsx(modified, added, removed, filename='BOM_Comparison.xlsx')
             ws.cell(row=start_row, column=1).alignment = center_align
             ws.merge_cells(start_row=start_row, start_column=2, end_row=end_row, end_column=2)
             ws.cell(row=start_row, column=2).alignment = center_align
+        # Apply fill and thick outer border for the block
+        for r in range(start_row, end_row + 1):
+            for c in range(1, 6):
+                cell = ws.cell(row=r, column=c)
+                cell.fill = fill_modified
+                top = thick if r == start_row else none_side
+                bottom = thick if r == end_row else none_side
+                left = thick if c == 1 else none_side
+                right = thick if c == 5 else none_side
+                cell.border = Border(top=top, bottom=bottom, left=left, right=right)
 
     # Añadidos
     for ref, data in added.items():
-        ws.append([ref, 'Added', '', '', ''])
+        fields = list(data.keys())
+        start_row = ws.max_row + 1
+        for field in fields:
+            ws.append([ref, 'Added', field, '', data.get(field, '')])
+        end_row = ws.max_row
+        if len(fields) > 1:
+            ws.merge_cells(start_row=start_row, start_column=1, end_row=end_row, end_column=1)
+            ws.cell(row=start_row, column=1).alignment = center_align
+            ws.merge_cells(start_row=start_row, start_column=2, end_row=end_row, end_column=2)
+            ws.cell(row=start_row, column=2).alignment = center_align
+        # Apply fill and thick outer border for the block
+        for r in range(start_row, end_row + 1):
+            for c in range(1, 6):
+                cell = ws.cell(row=r, column=c)
+                cell.fill = fill_added
+                top = thick if r == start_row else none_side
+                bottom = thick if r == end_row else none_side
+                left = thick if c == 1 else none_side
+                right = thick if c == 5 else none_side
+                cell.border = Border(top=top, bottom=bottom, left=left, right=right)
 
     # Eliminados
     for ref, data in removed.items():
-        ws.append([ref, 'Removed', '', '', ''])
+        fields = list(data.keys())
+        start_row = ws.max_row + 1
+        for field in fields:
+            ws.append([ref, 'Removed', field, data.get(field, ''), ''])
+        end_row = ws.max_row
+        if len(fields) > 1:
+            ws.merge_cells(start_row=start_row, start_column=1, end_row=end_row, end_column=1)
+            ws.cell(row=start_row, column=1).alignment = center_align
+            ws.merge_cells(start_row=start_row, start_column=2, end_row=end_row, end_column=2)
+            ws.cell(row=start_row, column=2).alignment = center_align
+        # Apply fill and thick outer border for the block
+        for r in range(start_row, end_row + 1):
+            for c in range(1, 6):
+                cell = ws.cell(row=r, column=c)
+                cell.fill = fill_removed
+                top = thick if r == start_row else none_side
+                bottom = thick if r == end_row else none_side
+                left = thick if c == 1 else none_side
+                right = thick if c == 5 else none_side
+                cell.border = Border(top=top, bottom=bottom, left=left, right=right)
 
     # Ajustar ancho de columnas
     for col in range(1, 6):
