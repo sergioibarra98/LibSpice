@@ -1,0 +1,19 @@
+**********
+* Littelfuse,WX
+* TVS Diode SPICE Models
+* TPSMF4L
+*
+* Justin Li
+* Product Engineering
+*
+* v1 12/30/2025
+*
+**********
+**********
+
+.SUBCKT TPSMF4L12A     1   2
+*       TERMINALS:   A   K
+Done    1            2   Dtvs
+Rleak   1            2   11meg
+.MODEL  Dtvs         D   (IS=1.0e-6 RS=0.293 N=1.5 IBV=1m BV=12 CJO=800p)
+.ENDS
